@@ -1,13 +1,7 @@
-//Carrier = 5
-//Battleship = 4
-//Cruiser =3
-//Submarine =3
-//Destroyer =2
-
 function Ship(name, ship_length){
     this.name = name;
     this.ship_length = ship_length;
-    const position_arr = [];
+    const position = [];
     const hits = 0;
     const sunk = false;
     //increases the number of hits
@@ -23,7 +17,7 @@ function Ship(name, ship_length){
         return this.sunk;
     }
 
-    return {name, ship_length, position_arr, hits, sunk, hit, isSunk}
+    return {name, ship_length, position , hits, sunk, hit, isSunk}
 }
 
 module.exports = Ship;
