@@ -2,9 +2,10 @@
   "name": "battleship",
   "version": "1.0.0",
   "description": "Odin Project TTD assignment",
-   "private": true,
+  "private": true,
   "scripts": {
-    "build": "webpack"
+    "build": "webpack",
+    "test": "jest"
   },
   "keywords": [],
   "author": "demolnau",
