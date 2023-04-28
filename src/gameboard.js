@@ -24,6 +24,7 @@ function Gameboard(){
     const missed_shots = [];
     const position_of_hits =[];
     var number_of_ships_sunk = 0 ;
+    var number_of_ships_played = 0;
     
 
     function create_board(){
@@ -104,9 +105,9 @@ function Gameboard(){
         else{ 
             ship_to_place.position = position_arr
             this.number_of_ships_played++;
-            console.log(ship_to_place.position)
+            //console.log(ship_to_place.position)
             for(let i=0;i<position_arr.length;i++){
-                console.log(this.get_index(position_arr[i][0],position_arr[i][1]))
+                //console.log(this.get_index(position_arr[i][0],position_arr[i][1]))
                 this.board[this.get_index(position_arr[i][0],position_arr[i][1])].has_ship=i            
             }
             return true;
@@ -115,10 +116,11 @@ function Gameboard(){
 
     function receiveAttack(posX, posY){
         let direct_hit = false;
+        console.log(posX + "," + posY)
         //determines if the coordinates hit any of the ships,
         //sends a hit to the correct ship,
         //records the coordinates of missed shot
-        if(missed_shots.includes(JSON.stringify([posX, posY])) || position_of_hits.includes(JSON.stringify([posX,posY]))){
+        if(JSON.stringify(missed_shots).includes(JSON.stringify([posX, posY])) || JSON.stringify(position_of_hits).includes(JSON.stringify([posX,posY]))){
             console.log("you already made that move!")
         }
         else{
@@ -135,7 +137,7 @@ function Gameboard(){
                         console.log(`YOU SUNK A ${this.ships[i].name} !!!!!`)
                     }
                     direct_hit = true;
-                    this.position_of_hits.push(JSON.stringify([posX,posY]))
+                    this.position_of_hits.push([posX,posY])
                     if(this.sunk_all_ships()==true){
                         console.log("GAME OVER")
                     }
@@ -144,15 +146,17 @@ function Gameboard(){
             }
             if(direct_hit==false){
                 console.log("you missed!")
-                this.missed_shots.push(JSON.stringify([posX, posY]))
+                this.missed_shots.push([posX, posY])
             }
             
         }
-
+        return direct_hit
     }
+
+    
     //determines if all the ships placed have been sunk
     function sunk_all_ships(){
-        if(REQUIRED_SHIPS.length>number_of_ships_sunk){
+        if(REQUIRED_SHIPS.length>this.number_of_ships_sunk){
             return false;
         }
         else{
@@ -178,6 +182,7 @@ function Gameboard(){
         ships,
         missed_shots,
         number_of_ships_sunk,
+        number_of_ships_played,
         placeShip, 
         create_board, 
         generate_ships,

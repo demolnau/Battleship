@@ -13,6 +13,8 @@ function Ship(name, ship_length){
     function isSunk(){
         if(this.ship_length==this.hits){
             this.sunk = true;
+            //console.log("Ship is sunk!")
+            //return this.sunk;
         }
         return this.sunk;
     }
