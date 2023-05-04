@@ -1,50 +1,49 @@
 const Ship = require("./ship")
 const {Square, Gameboard} = require("./gameboard.js")
 const DIMENSIONS =10;
-
 const myGameboard = Gameboard();
-myGameboard.initialize();
 const possible_positions = [[2,3], [3,3], [4,3]]
-
-beforeAll(() =>{
-    // const myGameboard = Gameboard();
-    // myGameboard.initialize();
-    // const possible_positions = [[2,3], [3,3], [4,3]]
-    //battleship.position = [[1,2],[1,3],[1,4],[1,5]]
-    
-})
-
-
-// test("can I make a square",()=>{
-//     let mySquare = Square(4,4)
-//     expect(JSON.stringify(mySquare.position)).toBe(JSON.stringify([4,4]))
-// })
+const REQUIRED_SHIPS = [
+    ["carrier", 5],
+    ["battleship", 4],
+    ["cruiser", 3],
+    ["submarine",3],
+    ["destroyer", 2]
+]
 
 test("position within board",()=>{
-    const myGameboard = Gameboard();
-    myGameboard.initialize();
-    const possible_positions = [[2,3], [3,3], [4,3]]
     expect(myGameboard.check_position_on_board(4,4)).toBe(true)
 })
-
-test("test get adjacent positions",()=>{
-    expect(JSON.stringify(myGameboard.get_adjacent_positions(4,4))).toBe(
-        JSON.stringify([
-        [3,4],
-        [4,3],
-        [4,5],
-        [5,4]
-        ])
-        )
+test("position within board false",()=>{
+    expect(myGameboard.check_position_on_board(4,10)).toBe(false)
 })
 
-test("is placement possible", ()=>{
-    expect(myGameboard.isPlacementPossible(possible_positions)).toBe(true)
+test("position within board false",()=>{
+    expect(myGameboard.check_position_on_board(-1,2)).toBe(false)
 })
 
+test("is placement possible, true", ()=>{
+    expect(myGameboard.isPlacementPossible(myGameboard.ships[3],possible_positions)).toBe(true)
+})
 
-test("gameboard should keep track of the ship placement",()=>{
-    expect(myGameboard.placeShip(myGameboard.ships[3],possible_positions)).toBe(true)
+test("is placement possible, false too long of an array", ()=> {
+    expect(myGameboard.isPlacementPossible(myGameboard.ships[4],possible_positions)).toBe(false)
+})
+test("is placement possible, false too short", ()=> {
+    expect(myGameboard.isPlacementPossible(myGameboard.ships[0],possible_positions)).toBe(false)
+})
+test("is placement possible, false outside of board", ()=> {
+    var out_of_bounds = [[4,8],[4,9],[4,10]]
+    expect(myGameboard.isPlacementPossible(myGameboard.ships[3],out_of_bounds)).toBe(false)
+})
+
+test("is placement possible, false because ship already at that position", ()=> {
+    myGameboard.placeShip(myGameboard.ships[3],possible_positions)
+    expect(myGameboard.isPlacementPossible(myGameboard.ships[4],possible_positions)).toBe(false)
+})
+
+test("gameboard should keep track of the ship placement, should be false because this was already placed above",()=>{
+    expect(myGameboard.placeShip(myGameboard.ships[3],possible_positions)).toBe(false)
 });
 
 test("receive attack function should determine if a ship was missed",()=>{
@@ -79,6 +78,74 @@ test("get the number of ships sunk",()=>{
 
 test("mock test setting the number of ships sunk to 5",()=>{
     myGameboard.number_of_ships_sunk = 5    
-    console.log(myGameboard.number_of_ships_sunk)
+    //console.log("number of ships sunk: "+myGameboard.number_of_ships_sunk)
     expect(myGameboard.sunk_all_ships()).toBe(true)
+})
+
+test("generate a vertical array given a length and a starting position",()=>{
+    var new_game = Gameboard();
+    //console.log(new_game.get_possible_position_array(44, 4, true).possible_pos_array)
+    expect(JSON.stringify(new_game.get_possible_position_array(44, 4, true).possible_pos_array)).toBe(JSON.stringify([[4,4],[5,4],[6,4],[7,4]]))
+})
+
+test("generate a horizontal position array given a starting position and a length",()=>{
+    var game1 = Gameboard();
+    expect(JSON.stringify(game1.get_possible_position_array(44, 3, false).possible_pos_array)).toBe(JSON.stringify([[4,4], [4,5],[4,6]]))
+})
+
+test("randomly generate a position array",()=>{
+    var game_random= Gameboard();
+    game_random.randomly_place_ships()
+    console.log(game_random.ships)
+    // expect(JSON.stringify(game_random.ships)).toBe(JSON.stringify(
+    //     [
+    //         {
+    //           name: 'carrier',
+    //           ship_length: 5,
+    //           position: [ [Array], [Array], [Array], [Array], [Array] ],
+    //           hits: 0,
+    //           sunk: false,
+    //           hit: [Function: hit],
+    //           isSunk: [Function: isSunk]
+    //         },
+    //         {
+    //           name: 'battleship',
+    //           ship_length: 4,
+    //           position: [ [Array], [Array], [Array], [Array] ],
+    //           hits: 0,
+    //           sunk: false,
+    //           hit: [Function: hit],
+    //           isSunk: [Function: isSunk]
+    //         },
+    //         {
+    //           name: 'cruiser',
+    //           ship_length: 3,
+    //           position: [ [Array], [Array], [Array] ],
+    //           hits: 0,
+    //           sunk: false,
+    //           hit: [Function: hit],
+    //           isSunk: [Function: isSunk]
+    //         },
+    //         {
+    //           name: 'submarine',
+    //           ship_length: 3,
+    //           position: [ [Array], [Array], [Array] ],
+    //           hits: 0,
+    //           sunk: false,
+    //           hit: [Function: hit],
+    //           isSunk: [Function: isSunk]
+    //         },
+    //         {
+    //           name: 'destroyer',
+    //           ship_length: 2,
+    //           position: [ [Array], [Array] ],
+    //           hits: 0,
+    //           sunk: false,
+    //           hit: [Function: hit],
+    //           isSunk: [Function: isSunk]
+    //         }
+    
+    //     ]
+    
+    // ))
 })
