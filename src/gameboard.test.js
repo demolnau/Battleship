@@ -1,15 +1,16 @@
-const Ship = require("./ship")
+//const Ship = require("./ship")
 const {Square, Gameboard} = require("./gameboard.js")
 const DIMENSIONS =10;
 const myGameboard = Gameboard();
-const possible_positions = [[2,3], [3,3], [4,3]]
-const REQUIRED_SHIPS = [
-    ["carrier", 5],
-    ["battleship", 4],
-    ["cruiser", 3],
-    ["submarine",3],
-    ["destroyer", 2]
-]
+var game_random= Gameboard();
+const possible_positions = [[2,3], [3,3], [4,3]];
+// const REQUIRED_SHIPS = [
+//     ["carrier", 5],
+//     ["battleship", 4],
+//     ["cruiser", 3],
+//     ["submarine",3],
+//     ["destroyer", 2]
+// ]
 
 test("position within board",()=>{
     expect(myGameboard.check_position_on_board(4,4)).toBe(true)
@@ -43,8 +44,23 @@ test("is placement possible, false because ship already at that position", ()=> 
 })
 
 test("gameboard should keep track of the ship placement, should be false because this was already placed above",()=>{
-    expect(myGameboard.placeShip(myGameboard.ships[3],possible_positions)).toBe(false)
+    expect(myGameboard.isPlacementPossible(myGameboard.ships[3],possible_positions)).toBe(false)
 });
+
+test("give the position of the 4th ship for gameboard",()=>{
+    expect(JSON.stringify(myGameboard.ships[3].position)).toBe(JSON.stringify([[2,3], [3,3], [4,3]]))
+});
+
+test("Check the number of ships that have been placed so far",()=>{
+    expect(myGameboard.number_of_ships_played).toBe(1)
+})
+
+test("Check the number of ships that have been placed so far",()=>{
+    var gameboard2= Gameboard();
+    gameboard2.placeShip(gameboard2.ships[4], [[4,4],[4,5]])
+    gameboard2.placeShip(gameboard2.ships[2],[[7,3],[8,3],[9,3]])
+    expect(gameboard2.number_of_ships_played).toBe(2)
+})
 
 test("receive attack function should determine if a ship was missed",()=>{
     expect(myGameboard.receiveAttack(5,3)).toBe(false)
@@ -77,26 +93,28 @@ test("get the number of ships sunk",()=>{
 })
 
 test("mock test setting the number of ships sunk to 5",()=>{
-    myGameboard.number_of_ships_sunk = 5    
+    var sinkable = Gameboard()
+    sinkable.number_of_ships_sunk = 5    
     //console.log("number of ships sunk: "+myGameboard.number_of_ships_sunk)
-    expect(myGameboard.sunk_all_ships()).toBe(true)
+    expect(sinkable.sunk_all_ships()).toBe(true)
+
 })
+
 
 test("generate a vertical array given a length and a starting position",()=>{
     var new_game = Gameboard();
     //console.log(new_game.get_possible_position_array(44, 4, true).possible_pos_array)
-    expect(JSON.stringify(new_game.get_possible_position_array(44, 4, true).possible_pos_array)).toBe(JSON.stringify([[4,4],[5,4],[6,4],[7,4]]))
+    expect(JSON.stringify(new_game.get_possible_position_array(44, 4, true))).toBe(JSON.stringify([[4,4],[5,4],[6,4],[7,4]]))
 })
 
 test("generate a horizontal position array given a starting position and a length",()=>{
     var game1 = Gameboard();
-    expect(JSON.stringify(game1.get_possible_position_array(44, 3, false).possible_pos_array)).toBe(JSON.stringify([[4,4], [4,5],[4,6]]))
+    expect(JSON.stringify(game1.get_possible_position_array(44, 3, false))).toBe(JSON.stringify([[4,4], [4,5],[4,6]]))
 })
 
 test("randomly generate a position array",()=>{
-    var game_random= Gameboard();
     game_random.randomly_place_ships()
-    console.log(game_random.ships)
+    //console.log(game_random.ships)
     // expect(JSON.stringify(game_random.ships)).toBe(JSON.stringify(
     //     [
     //         {

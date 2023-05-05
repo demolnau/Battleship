@@ -1,6 +1,6 @@
 const Ship = require("./ship")
 
-const NUMBER_OF_REQUIRED_SHIPS = 5
+//const NUMBER_OF_REQUIRED_SHIPS = 5
 const DIMENSIONS = 10;
 const REQUIRED_SHIPS = [
     ["carrier", 5],
@@ -94,30 +94,26 @@ function Gameboard(){
 
     function placeShip(ship_to_place, position_arr){
         //check if placement is possible
-        if(!isPlacementPossible(ship_to_place,position_arr)){
-            return false;
-        }
-        else{ 
+        if(isPlacementPossible(ship_to_place,position_arr)){
             ship_to_place.position = position_arr
             //console.log(ship_to_place.position)
             for(let i=0;i<position_arr.length;i++){
                 //console.log(board[get_index(position_arr[i][0],position_arr[i][1])])
                 board[get_index(position_arr[i][0],position_arr[i][1])].has_ship=i            
             }
-            number_of_ships_played = number_of_ships_played + 1;
-            console.log("number of ships played increased by one: "+ number_of_ships_played + "\n" + ship_to_place.name + " placed successfully")
-            return true;
-        }    
+            this.number_of_ships_played++;
+            console.log("number of ships played increased by one: "+ this.number_of_ships_played + "\n" + ship_to_place.name + " placed successfully")
+        } 
     }
 
     function receiveAttack(posX, posY){
         let direct_hit = false;
-        
         //determines if the coordinates hit any of the ships,
         //sends a hit to the correct ship,
         //records the coordinates of missed shot
         if(JSON.stringify(missed_shots).includes(JSON.stringify([posX, posY])) || JSON.stringify(position_of_hits).includes(JSON.stringify([posX,posY]))){
             console.log("you already made that move!")
+            //return
         }
         else{
             for(let i=0;i<this.ships.length;i++){
@@ -168,7 +164,7 @@ function Gameboard(){
     this.get_possible_position_array = function(starting_position, length, isVertical){
         var possible_pos_array=[]
         var previousPos = starting_position;
-        var abort = false;
+        
         possible_pos_array.push(board[starting_position].position)
         if(isVertical == true){
             console.log("Generating a vertical position array")
@@ -176,7 +172,6 @@ function Gameboard(){
                 previousPos  = previousPos + 10
                 if(board[previousPos]== undefined){
                     console.log("Attempted to create a position off the board")
-                    abort = true
                     return
                 }
                 else{
@@ -191,8 +186,7 @@ function Gameboard(){
                 previousPos  = previousPos+ 1
                 if(board[previousPos] == undefined){
                     console.log("Attempted to create a position off the board")
-                    abort = true
-                    return
+                    return 
                 }
                 else{
                     pos_of_interest = board[previousPos].position
@@ -202,23 +196,29 @@ function Gameboard(){
             }
         }
         console.log("Generated possible array: "+JSON.stringify(possible_pos_array))
-        return{possible_pos_array, abort}
+        return possible_pos_array
     }
     
     function randomly_place_ships(){
-        while(number_of_ships_played<5){
+        var counter = 0
+        while(counter<5){
             var index_i = Math.floor(Math.random()*(DIMENSIONS*DIMENSIONS));
             var isVertical = Math.random() < 0.5;
-            console.log("randomly generated starting position: " + index_i + "\n" + "number of ships played: "+ number_of_ships_played)
-            var results = get_possible_position_array(index_i, this.ships[number_of_ships_played].ship_length, isVertical)
-            var pos_arr = results.possible_pos_array
-            var abort = results.abort
-            if(abort==false){
-                placeShip(this.ships[number_of_ships_played], pos_arr)
+            console.log("randomly generated starting position: " + index_i + "\n" + "number of ships played: "+ counter)
+            var results = get_possible_position_array(index_i, this.ships[counter].ship_length, isVertical)
+            if(results==undefined){
+                console.log("This position array will not work. Generate a new positon array")
             }
             else{
-                console.log("This position array will not work. Generate a new positon array")
-                return
+                if(isPlacementPossible(this.ships[counter],results)){
+                    this.ships[counter].position = results
+                    for(let i=0;i<results.length;i++){
+                        board[get_index(results[i][0],results[i][1])].has_ship=i            
+                    }
+                    this.number_of_ships_played++;
+                    console.log("number of ships played increased by one: "+ this.number_of_ships_played + "\n" + this.ships[counter].name + " placed successfully at " +JSON.stringify(this.ships[counter].position))
+                    counter++;
+                }
             }
         }
     }
