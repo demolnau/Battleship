@@ -8,11 +8,6 @@ var player3 = Player();
 
 test("create a player that is a person and wants to randomly place their ships",()=>{
     player1.randomShipPlacement();
-    // for(let i=0; i< player1.gameboard.ships.length; i++){
-    //     console.log(`Placement of ship ${i} by player1 at random: ${JSON.stringify(player1.gameboard.ships[i].position)}`)
-    // }
-    //console.log(`number of ships placed by player1: ${player1.gameboard.number_of_ships_played}`)
-    //expect(player1.isGameboardSet()).toBe(true)
 })
 test("check the number of ships that have been placed",()=>{
     expect(player1.gameboard.number_of_ships_played).toBe(5)
@@ -24,10 +19,6 @@ test("create a player that wants to manually place their ships",()=>{
     player3.manualShipPlacement(player3.gameboard.ships[2],[[8,5],[8,6],[8,7]])
     player3.manualShipPlacement(player3.gameboard.ships[3],[[7,3],[8,3],[9,3]])
     player3.manualShipPlacement(player3.gameboard.ships[4],[[4,4],[4,5]])
-    // for(let i=0; i< player3.gameboard.ships.length; i++){
-    //     console.log(`Manual placement of ship ${i} by player3: ${JSON.stringify(player3.gameboard.ships[i].position)}`)
-    // }
-    //expect(player3.isGameboardSet()).toBe(true)
 })
 test("check the number of ships that have been placed",()=>{
     expect(player3.gameboard.number_of_ships_played).toBe(5)
