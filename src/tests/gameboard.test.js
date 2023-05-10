@@ -1,5 +1,5 @@
 //const Ship = require("./ship")
-const {Square, Gameboard} = require("./gameboard.js")
+const {Square, Gameboard} = require("../factories/gameboard.js")
 const DIMENSIONS =10;
 const myGameboard = Gameboard();
 var game_random= Gameboard();

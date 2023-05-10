@@ -1,6 +1,6 @@
 //const Ship = require("./ship")
 //const {Square, Gameboard} = require("./gameboard.js")
-const Player = require("./player.js")
+const Player = require("../factories/player.js")
 const DIMENSIONS =10;
 
 var player1 = Player();
@@ -23,24 +23,31 @@ test("create a player that wants to manually place their ships",()=>{
 test("check the number of ships that have been placed",()=>{
     expect(player3.gameboard.number_of_ships_played).toBe(5)
 })
-
+test("check the number of available positions to hit",()=>{
+    expect(player1.available_moves.length).toBe(100)
+})
 test("manual attack hit",()=>{
     expect(player1.manual_attack(player3,[4,4])).toBe(true)
 })
 test("record of the hits on player3's board",()=>{
     expect(JSON.stringify(player3.gameboard.position_of_hits)).toBe(JSON.stringify([[4,4]]));
 })
+test("should not have the index for position 4,4 still listed in the available positions to attack for player 1",()=>{
+    //const removed_index = player3.gameboard.get_index(4,4)
+    expect(JSON.stringify(player1.available_moves).includes(JSON.stringify([4,4]))).toBe(false)
+})
+
 test("manual attack miss",()=>{
     expect(player1.manual_attack(player3,[6,3])).toBe(false)
 })
-test("manual attack miss",()=>{
-    expect(player1.manual_attack(player3,[6,4])).toBe(false)
-})
 
 test("record of the misses on player3's board",()=>{
+    player1.manual_attack(player3,[6,4])
     expect(JSON.stringify(player3.gameboard.missed_shots)).toBe(JSON.stringify([[6,3], [6,4]]));
 })
 
+
 test("random attack",()=>{
-    console.log(player1.random_attack(player3))
+    player3.random_attack(player1)
+    expect(player3.available_moves.length).toBe(99)
 })

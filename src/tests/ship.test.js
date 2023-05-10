@@ -1,5 +1,5 @@
 //import Ship from "./javascript.js"
-const Ship = require('./ship');
+const Ship = require('../factories/ship');
 
 let battleship;
 beforeAll(() =>{
