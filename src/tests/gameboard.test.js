@@ -47,6 +47,10 @@ test("gameboard should keep track of the ship placement, should be false because
     expect(myGameboard.isPlacementPossible(myGameboard.ships[3],possible_positions)).toBe(false)
 });
 
+test("ship sound not allow the placement of a ship if that spot is taken",()=>{
+    expect(myGameboard.placeShip(myGameboard.ships[3],possible_positions)).toBe(false)
+});
+
 test("give the position of the 4th ship for gameboard",()=>{
     expect(JSON.stringify(myGameboard.ships[3].position)).toBe(JSON.stringify([[2,3], [3,3], [4,3]]))
 });

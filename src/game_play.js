@@ -1,110 +1,374 @@
-//import Player from "/factories/player.js";
 const Player = require("./factories/player")
+//const Gameboard = require("./factories/gameboard")
 
+var player1 = Player()
+var player2 = Player()
+player1.name = "Player1"
+player2.name = "Player2"
+var selection = [] 
+var current_ship;
+var target_length;
+var isVertical = false;
+var position = []
+var isPlaced;
 
+var my_grid = document.querySelector('.grid-container-mine')
+var opponent_grid =document.querySelector('.grid-container-opponent')
 
-// function play_a_round(player1, player2){
-//     player1.random_attack(player2)
-//     if(player2.gameboard.number_of_ships_sunk<5){
-//         player2.random_attack(player1)
-//     }
-// }
+var hit_me = player1.gameboard.position_of_hits
+var missed_me = player1.gameboard.missed_shots
 
-// function determine_winner(player1,player2){
-//     if(player1.gameboard.number_of_ships_sunk==5){
-//         return player2
-//     }
-//     if(player2.gameboard.number_of_ships_sunk==5){
-//         return player1
-//     }
-// }
+var hit_opponent = player2.gameboard.position_of_hits
+var missed_opponent = player2.gameboard.missed_shots
 
-// function play_a_game(){
-//     var player1 = Player()
-//     player1.name = "player1"
-//     var player2 = Player()
-//     player2.name = "player2"
-//     var counter=0;
-//     player1.randomShipPlacement();
-//     //player2.randomShipPlacement();
-//     player2.manualShipPlacement(player2.gameboard.ships[0],[[1,2],[1,3],[1,4],[1,5],[1,6]])
-//     player2.manualShipPlacement(player2.gameboard.ships[1],[[2,3],[2,4],[2,5],[2,6]])
-//     player2.manualShipPlacement(player2.gameboard.ships[2],[[8,5],[8,6],[8,7]])
-//     player2.manualShipPlacement(player2.gameboard.ships[3],[[7,3],[8,3],[9,3]])
-//     player2.manualShipPlacement(player2.gameboard.ships[4],[[4,4],[4,5]])
-//     //play_a_round(player1, player2)
-//     var positions_till_sunk = [];
-//     for(let i=0; i<player2.gameboard.ships.length;i++){
-//         positions_till_sunk.push(player2.gameboard.ships[i].position)
-//     }
-//     positions_till_sunk = positions_till_sunk.flat()
-//     console.log("array of player2 ship positions: " + JSON.stringify(positions_till_sunk))
+var content = document.querySelector(".choices > .content")
+var manual_placement = document.querySelector(".manual_placement")
+var random_placement = document.querySelector(".random_placement")
+var reset_button = document.createElement("button")
+reset_button.classList.add("reset_button")
+reset_button.innerHTML = "Reset"
+var my_console =document.querySelector(".console > .text")
+my_console.innerHTML = "Would you like to place your own ships manually or at random?"
 
-//     //console.log("Number of ships sunk on player1's board: "+player1.gameboard.number_of_ships_sunk)
-//     // while(player1.gameboard.sunk_all_ships()==false && player2.gameboard.sunk_all_ships()==false){
-//     //     //play_a_round(player1, player2)
-//     //     counter++
-//     // }
-//     for(let i=0;i<positions_till_sunk.length;i++){
-//         player1.manual_attack(player2, positions_till_sunk[i])
-//         counter++
-//     }
-    
-//     //alternating_moves();
-//     var winner = determine_winner(player1,player2)
-//     console.log(`${winner.name} has won after ${counter} rounds!`)
-//     return winner
-// }
+var rotate_selection = document.createElement("button")
+rotate_selection.innerHTML = "Rotate ship"
+rotate_selection.classList.add("rotate_ship")
 
-function Game(){
-    var counter = 0 
-    var player1 = Player()
-    var player2 = Player()
+var next_selection = document.createElement("button")
+next_selection.innerHTML = "Place next ship"
+next_selection.classList.add("place_next_ship")
 
-    function set_players_names(player1_name, player2_name){
-        this.player1.name = player1_name
-        this.player2.name = player2_name
-    }
-    
-    function alternating_moves(player1, player2){
-        while(player1.gameboard.number_of_ships_sunk<5 || player2.gameboard.number_of_ships_sunk<5){
-            this.counter++;
-            player1.random_attack(player2)
-            //player2.random_attack(player1)
-                if(player2.gameboard.number_of_ships_sunk<5){
-                    player2.random_attack(player1)
+create_opponent_board()
+create_my_board()
+var my_grid_items = my_grid.querySelectorAll(":scope > .grid-item")
+var opponent_grid_items = opponent_grid.querySelectorAll(":scope > .grid-item")
+
+manual_placement.addEventListener("click", manually_place_ships_by_click);
+
+random_placement.onclick = function() {
+    content.innerHTML = ""
+    my_console.innerHTML = ""
+    player1.randomShipPlacement()
+    check_my_status()
+    ready_to_play()
+}
+
+function get_selection(ship,starting_position, target_length, isVertical){
+    var posX = Number(starting_position[0])
+    var posY = Number(starting_position[1])
+    possible_pos_array=[]
+    possible_pos_array.push(starting_position)
+    for(let i=1;i<target_length;i++){
+                if(isVertical==true){
+                    posX = posX+1
+                    var possible_position = [posX,posY]
+                    possible_pos_array.push(possible_position)
                 }
-        }
+                else{
+                    posY = posY+1
+                    var possible_position = [posX,posY]
+                    possible_pos_array.push(possible_position)
+                }
     }
-    function determine_winner(player1,player2){
-        if(this.player1.gameboard.number_of_ships_sunk==5){
-            return player2
-        }
-        else{
-            return player1
-        }
+    if(player1.gameboard.isPlacementPossible(ship,possible_pos_array,isVertical) == false){
+        return
     }
+    else{
+        return possible_pos_array
+    }
+    
+}
 
-    function play_a_game(){
-        //var players = get_players("player1","player2")
-        this.player1.randomShipPlacement();
-        this.player2.randomShipPlacement();
-        alternating_moves(this.player1, this.player2);
-        var winner = this.determine_winner(this.player1,this.player2)
-        console.log(`${winner.name} has won after ${this.counter} rounds!`)
-        return winner
-    }
-    return{
-        counter,
-        player1,
-        player2,
-        set_players_names,
-        alternating_moves,
-        determine_winner,
-        play_a_game
+function create_opponent_board(){
+    for(let i=1;i<DIMENSIONS+1; i++){
+        for(let j=1;j<DIMENSIONS+1;j++){
+            var item = document.createElement('div');
+            item.className = "grid-item"
+            item.style.gridRow= i +"/"+ "span 1";
+            item.style.gridColumn= j +"/"+ "span 1 ";
+            item.innerHTML=`${i-1},${j-1}`
+            opponent_grid.append(item)
+        }
     }
 }
-module.exports = Game
+
+function create_my_board(){
+    for(let m=1;m<DIMENSIONS+1; m++){
+        for(let n=1;n<DIMENSIONS+1;n++){
+            var item = document.createElement('div');
+            item.className = "grid-item"
+            item.style.gridRow= m +"/"+ "span 1";
+            item.style.gridColumn= n +"/"+ "span 1 ";
+            item.innerHTML=`${m-1},${n-1}`
+            my_grid.append(item)
+        }
+    }
+}
 
 
-//module.exports = determine_winner
+function manually_place_ships_by_click(){
+    //right click to switch between vertical and horizontal placement options
+    content.innerHTML = ""
+    my_console.innerHTML = ""
+    content.appendChild(reset_button)
+    get_position_loop()
+    mouseover_loop()
+    make_seleciton_loop()
+    get_next_ship()
+}
+
+function toggle_isVertical(to_tog){
+if(to_tog==false){
+    return true
+}
+else{
+    return false
+}
+}
+
+function get_position_loop(){
+my_grid_items.forEach(function(item){
+    item.addEventListener("mouseover",function(){
+        get_position(item)
+    }
+    )
+})
+}
+
+
+
+// rotate_selection.addEventListener('click',function(){
+//     isVertical = toggle_isVertical(isVertical)
+// })
+
+window.addEventListener('contextmenu',function(event){
+    event.preventDefault();
+    isVertical = toggle_isVertical(isVertical)
+})
+
+
+function mouseover_loop(){
+    my_grid_items.forEach(function(item){
+        item.addEventListener("mouseover", mouseover_selection)
+    })
+}
+
+function get_position(item){
+    var posX = Number(item.innerHTML[0])
+    var posY = Number(item.innerHTML[2])
+    position = [posX, posY]
+    return position
+}
+
+function mouseover_selection(){
+    target_length = current_ship.ship_length;
+    if(isPlaced==false){
+        selection = get_selection(current_ship, position, target_length, isVertical)
+        if(selection==undefined){
+            remove_all_highlight()
+        }
+        else{
+            highlight(selection)
+        }
+        return selection
+    }
+    else{
+        return
+    }
+}
+
+
+
+
+function highlight(arr){
+my_grid_items.forEach(function(item){
+    position = get_position(item)
+    if(JSON.stringify(arr).includes(position)){
+        item.classList.add("hover_over")
+    }
+    else{
+        item.classList.remove("hover_over")
+    }
+})
+}
+
+function remove_all_highlight(){
+    my_grid_items.forEach(function(item){
+        item.classList.remove("hover_over")
+    })
+}
+
+function make_selection(ship, arr, isVertical){
+if(isPlaced==false){
+    remove_all_highlight()
+    var results = player1.gameboard.placeShip(ship,arr,isVertical)
+    isPlaced = true
+    check_my_status()
+    if(results!=undefined){
+        return true
+    }
+    else{
+        return false
+    }
+}
+}
+
+
+function make_seleciton_loop(){
+my_grid_items.forEach(function(item){
+    item.addEventListener("click", function(){
+       var results = make_selection(current_ship,selection,isVertical)
+            if(results){
+                get_next_ship()
+            }
+        }) 
+    })
+}
+
+// function remove_mouseover(){
+//     my_grid_items.forEach(function(item){
+//         item.removeEventListener("mouseover", mouseover_selection)
+//     })
+// }
+
+function get_next_ship(){
+    if(player1.gameboard.number_of_ships_played<5){
+        current_ship = player1.gameboard.ships[player1.gameboard.number_of_ships_played]
+        console.log(current_ship)
+        my_console.innerHTML = ""
+        my_console.innerHTML = `Place your ${current_ship.name} . Right-click to rotate.`
+        isPlaced = false
+    }
+    else{
+        console.log("You placed all your ships! Ready to play!")
+        my_console.innerHTML = ""
+        ready_to_play()
+    }
+
+}
+
+function get_isPlaced(){
+    return isPlaced
+}
+
+function ready_to_play(){
+    player2.randomShipPlacement()
+    my_console.innerHTML = "Now we are ready to play. Click on the opposing team's board to launch an attack."
+    content.appendChild(reset_button)
+    play_a_game()
+}
+
+reset_button.onclick = function(){
+    location.reload();
+}
+
+function play_a_game(){
+    opponent_grid_items.forEach(function(item){
+        var posX = Number(item.innerHTML[0])
+        var posY = Number(item.innerHTML[2])
+        var position = [posX, posY]
+            item.onclick = function(){
+                my_console.innerHTML=""
+                if(player1.gameboard.number_of_ships_sunk<5 && player2.gameboard.number_of_ships_sunk<5){
+                    my_console.innerHTML ="Entered this loop on a click"
+                    var result = player1.manual_attack(player2,position)
+                    
+                    if(result!=undefined){
+                        check_opponents_status(item)
+                        if(result==true){
+                            my_console.innerHTML = `Direct hit at [${item.innerHTML}] on opponent`
+                            if(player2.gameboard.number_of_ships_sunk==5){
+                                my_console.innerHTML  = `You are a winner!`
+                                
+                            }
+                        }
+                        else{
+                            my_console.innerHTML = `Attack at [${item.innerHTML}] missed opponent`
+                        }
+
+                        player2.smart_attack(player1)
+                        check_my_status()
+
+                        if(player1.gameboard.number_of_ships_sunk==5){
+                            my_console.innerHTML  = `You lost! Click reset to play again!`
+                        }
+                        
+                    }
+            
+                    else{
+                        my_console.innerHTML = `Attack at [${item.innerHTML}] is not allowed`
+                    }
+            }
+            else{
+                my_console.innerHTML = "No more moves are allowed. Please reset your game if you want to continue."
+                return
+                }
+        }    
+    })
+}
+
+function check_my_status(){
+    my_grid_items.forEach(function(item){
+        var posX = Number(item.innerHTML[0])
+        var posY = Number(item.innerHTML[2])
+        var position = [posX, posY]
+        var my_ships = player1.gameboard.get_position_of_ships()
+        var my_sunk_ships = player1.gameboard.get_sunk_ship_positions()
+        //console.log("My ships" + JSON.stringify(my_ships))
+        if(JSON.stringify(my_ships).includes(JSON.stringify(position))){
+            item.classList.add("ship_present")  
+        }
+        if(JSON.stringify(hit_me).includes(JSON.stringify(position))){
+            item.classList.add("hit")
+        }
+        if(JSON.stringify(missed_me).includes(JSON.stringify(position))){
+            item.classList.add("miss")
+        }
+        if(JSON.stringify(my_sunk_ships).includes(JSON.stringify(position))){
+            my_ship_is_sunk(my_sunk_ships)
+        }
+    })
+}
+
+
+function check_opponents_status(item){
+    var posX = Number(item.innerHTML[0])
+    var posY = Number(item.innerHTML[2])
+    var position = [posX, posY]
+    var sunk_ships_opponents = player2.gameboard.get_sunk_ship_positions()
+
+    if(JSON.stringify(sunk_ships_opponents).includes(JSON.stringify(position))){
+        console.log(JSON.stringify(sunk_ships_opponents))
+        opponent_ship_is_sunk(sunk_ships_opponents)
+    }
+    if(JSON.stringify(hit_opponent).includes(JSON.stringify(position))){
+        item.classList.add("hit")
+    }
+    if(JSON.stringify(missed_opponent).includes(JSON.stringify(position))){
+        item.classList.add("miss")
+    }
+}
+
+function opponent_ship_is_sunk(arr){
+    opponent_grid_items.forEach(function(item){
+        var posX = Number(item.innerHTML[0])
+        var posY = Number(item.innerHTML[2])
+        var position = [posX, posY]
+        if(JSON.stringify(arr).includes(JSON.stringify(position))){
+            item.classList.remove("hit")
+            item.classList.add("sunk")
+        }
+    })
+}
+
+function my_ship_is_sunk(arr){
+    my_grid_items.forEach(function(item){
+        var posX = Number(item.innerHTML[0])
+        var posY = Number(item.innerHTML[2])
+        var position = [posX, posY]
+        if(JSON.stringify(arr).includes(JSON.stringify(position))){
+            item.classList.remove("hit")
+            item.classList.add("sunk")
+        }
+    })
+}
