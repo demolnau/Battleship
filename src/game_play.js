@@ -135,12 +135,6 @@ my_grid_items.forEach(function(item){
 })
 }
 
-
-
-// rotate_selection.addEventListener('click',function(){
-//     isVertical = toggle_isVertical(isVertical)
-// })
-
 window.addEventListener('contextmenu',function(event){
     event.preventDefault();
     isVertical = toggle_isVertical(isVertical)

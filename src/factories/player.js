@@ -64,6 +64,7 @@ function Player(){
                 var posX= this.available_moves[index_i][0]
                 var posY = this.available_moves[index_i][1]
                 this.available_moves.splice(index_i,1)
+                console.log("Number of moves possible to make: "+this.available_moves.length)
                   if(!JSON.stringify(this.previous_moves).includes(JSON.stringify([posX,posY]))){
                     this.previous_moves.push([posX,posY])
                     return opponent.gameboard.receiveAttack(posX, posY)

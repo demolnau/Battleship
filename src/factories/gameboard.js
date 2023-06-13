@@ -163,13 +163,14 @@ function Gameboard(){
     }
 
     function placeShip(ship_to_place, position_arr , isVertical){
-        console.log("Called place ship on: " + ship_to_place.name +
-         "\n for positions: "+JSON.stringify(position_arr))
         try{
+            console.log("Called place ship on: " + ship_to_place.name +
+            "\n for positions: "+JSON.stringify(position_arr)+
+            "\n Number of ships already on board: " + number_of_ships_played)
             if(this.isPlacementPossible(ship_to_place, position_arr, isVertical)){
                 ship_to_place.position = position_arr
-                this.number_of_ships_played++;
-                console.log(ship_to_place.name + " placed successfully")
+                number_of_ships_played++;
+                console.log(ship_to_place.name + " placed successfully \n Number of ships placed now updated to " + number_of_ships_played)
                 return true
             } 
             else{
@@ -179,10 +180,13 @@ function Gameboard(){
         }
         catch(error){
             if(error instanceof TypeError){
+                console.log("Alternate called: \n Called place ship on: " + ship_to_place.name +
+                "\n for positions: "+JSON.stringify(position_arr)+
+                "\n Number of ships already on board: " + number_of_ships_played)
                 if(isPlacementPossible(ship_to_place, position_arr, isVertical)){
                     ship_to_place.position = position_arr
-                    this.number_of_ships_played++;
-                    console.log(ship_to_place.name + " placed successfully")
+                    number_of_ships_played++;
+                    console.log(ship_to_place.name + " placed successfully \n Number of ships placed now updated to " + number_of_ships_played)
                     return true
                 } 
                 else{
@@ -200,37 +204,75 @@ function Gameboard(){
     }
 
     function receiveAttack(posX, posY){
-        let direct_hit = false;
+        //let direct_hit = false;
+        //var position_of_ships =  this.get_position_of_ships();
         //determines if the coordinates hit any of the ships,
         //sends a hit to the correct ship,
         //records the coordinates of missed shot
-        if(JSON.stringify(missed_shots).includes(JSON.stringify([posX, posY])) || JSON.stringify(position_of_hits).includes(JSON.stringify([posX,posY]))){
-            console.log("you already made that move!")
-        }
-        else{
-            for(let i=0;i<this.ships.length;i++){
-                if(JSON.stringify(this.ships[i].position).includes(JSON.stringify([posX,posY]))){
-                    console.log("you hit a ship!")
-                    this.ships[i].hits++;
-                    if(this.ships[i].isSunk()==true){
-                        this.number_of_ships_sunk++;
-                        console.log(`YOU SUNK A ${this.ships[i].name}!`)
+        try{
+            if(JSON.stringify(this.missed_shots).includes(JSON.stringify([posX, posY])) || JSON.stringify(this.position_of_hits).includes(JSON.stringify([posX,posY]))){
+                console.log("you already made that move!")
+            }
+            else{
+                for(let i=0;i<this.ships.length;i++){
+                    if(JSON.stringify(this.ships[i].position).includes(JSON.stringify([posX,posY]))){
+                        //console.log("you hit a ship!")
+                        this.ships[i].hits++;
+                        //direct_hit = true;
+                        this.position_of_hits.push([posX,posY])
+                        if(this.ships[i].isSunk()==true){
+                            this.number_of_ships_sunk++;
+                            console.log(`YOU SUNK A ${this.ships[i].name}!`)
+                        }
+                        if(this.sunk_all_ships()==true){
+                            console.log("GAME OVER")
+                        }
+                        return true
                     }
-                    direct_hit = true;
-                    this.position_of_hits.push([posX,posY])
-                    if(this.sunk_all_ships()==true){
-                        console.log("GAME OVER")
-                    }
+                    // else{
+                    //     console.log("you missed!")
+                    //     this.missed_shots.push([posX, posY])
+                    //     return false
+                    // }
                 }
-                
-            }
-            if(direct_hit==false){
-                console.log("you missed!")
+                //console.log("you missed!")
                 this.missed_shots.push([posX, posY])
+                return false
             }
-            
         }
-        return direct_hit
+        catch(error){
+            if(JSON.stringify(missed_shots).includes(JSON.stringify([posX, posY])) || JSON.stringify(position_of_hits).includes(JSON.stringify([posX,posY]))){
+                console.log("you already made that move!")
+            }
+            else{
+                for(let i=0;i<ships.length;i++){
+                    if(JSON.stringify(ships[i].position).includes(JSON.stringify([posX,posY]))){
+                        //console.log("you hit a ship!")
+                        ships[i].hits++;
+                        //direct_hit = true;
+                        position_of_hits.push([posX,posY])
+                        if(ships[i].isSunk()==true){
+                            number_of_ships_sunk++;
+                            console.log(`YOU SUNK A ${ships[i].name}!`)
+                        }
+                        if(sunk_all_ships()==true){
+                            console.log("GAME OVER")
+                        }
+                        return true
+                    }
+                    // else{
+                    //     console.log("you missed!")
+                    //     missed_shots.push([posX, posY])
+                    //     return false
+                    // }
+                }
+                //console.log("you missed!")
+                missed_shots.push([posX, posY])
+                return false
+            }
+        }
+
+
     }
 
     
