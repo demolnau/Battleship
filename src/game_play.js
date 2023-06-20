@@ -1,14 +1,42 @@
 import './styles.css'
+const setup_boards = require("./setup")
 const Player = require("./factories/player")
 
+
+setup_boards()
 var player1 = Player()
 var player2 = Player()
 player1.name = "Player1"
 player2.name = "Player2"
 
-var DIMENSIONS = 10;
+var my_grid = document.querySelector('.grid-container-mine')
+var opponent_grid =document.querySelector('.grid-container-opponent')
 
-function get_selection(ship, starting_position, target_length, isVertical){
+var hit_me = player1.gameboard.position_of_hits
+var missed_me = player1.gameboard.missed_shots
+
+var hit_opponent = player2.gameboard.position_of_hits
+var missed_opponent = player2.gameboard.missed_shots
+
+var content = document.querySelector(".choices > .content")
+var my_console = document.querySelector(".console > .text")
+//my_console.innerHTML = "Would you like to place your own ships manually or at random?"
+
+var reset_button = document.createElement("button")
+reset_button.classList.add("reset_button")
+reset_button.innerHTML = "Reset"
+
+// var rotate_selection = document.createElement("button")
+// rotate_selection.innerHTML = "Rotate ship"
+// rotate_selection.classList.add("rotate_ship")
+
+// var next_selection = document.createElement("button")
+// next_selection.innerHTML = "Place next ship"
+// next_selection.classList.add("place_next_ship")
+
+
+function get_selection(ship, starting_position, isVertical){
+    var target_length = ship.ship_length;
     var posX = Number(starting_position[0])
     var posY = Number(starting_position[1])
     possible_pos_array=[]
@@ -25,85 +53,27 @@ function get_selection(ship, starting_position, target_length, isVertical){
                     possible_pos_array.push(possible_position)
                 }
     }
-    if(player1.gameboard.isPlacementPossible(ship,possible_pos_array,isVertical) == false){
-        return
-    }
-    else{
+
+    if(player1.gameboard.isPlacementPossible(ship,possible_pos_array,isVertical) == true){
         return possible_pos_array
     }
-    
-}
-
-
-var my_grid = document.querySelector('.grid-container-mine')
-var opponent_grid =document.querySelector('.grid-container-opponent')
-
-var hit_me = player1.gameboard.position_of_hits
-var missed_me = player1.gameboard.missed_shots
-
-var hit_opponent = player2.gameboard.position_of_hits
-var missed_opponent = player2.gameboard.missed_shots
-
-
-
-var content = document.querySelector(".choices > .content")
-var manual_placement = document.querySelector(".manual_placement")
-var random_placement = document.querySelector(".random_placement")
-var reset_button = document.createElement("button")
-reset_button.classList.add("reset_button")
-reset_button.innerHTML = "Reset"
-var my_console =document.querySelector(".console > .text")
-my_console.innerHTML = "Would you like to place your own ships manually or at random?"
-
-// var rotate_selection = document.createElement("button")
-// rotate_selection.innerHTML = "Rotate ship"
-// rotate_selection.classList.add("rotate_ship")
-
-// var next_selection = document.createElement("button")
-// next_selection.innerHTML = "Place next ship"
-// next_selection.classList.add("place_next_ship")
-
-function create_opponent_board(){
-    for(let i=1;i<DIMENSIONS+1; i++){
-        for(let j=1;j<DIMENSIONS+1;j++){
-            var item = document.createElement('div');
-            item.className = "grid-item"
-            item.style.gridRow= i +"/"+ "span 1";
-            item.style.gridColumn= j +"/"+ "span 1 ";
-            item.innerHTML=`${i-1},${j-1}`
-            opponent_grid.append(item)
-        }
+    else{
+        return 
     }
+    //return possible_pos_array
 }
-
-function create_my_board(){
-    for(let m=1;m<DIMENSIONS+1; m++){
-        for(let n=1;n<DIMENSIONS+1;n++){
-            var item = document.createElement('div');
-            //item.className = "item_"+m+", "+n+ " grid-item"
-            item.className = "grid-item"
-            item.style.gridRow= m +"/"+ "span 1";
-            item.style.gridColumn= n +"/"+ "span 1 ";
-            item.innerHTML=`${m-1},${n-1}`
-            my_grid.append(item)
-        }
-    }
-}
-
-create_opponent_board()
-create_my_board()
 
 var my_grid_items = my_grid.querySelectorAll(":scope > .grid-item")
 var opponent_grid_items = opponent_grid.querySelectorAll(":scope > .grid-item")
 var selection = [] 
 var current_ship ;
-var target_length;
 var isVertical = false;
 var position = []
 var isPlaced;
 
-manual_placement.addEventListener("click", manually_place_ships_by_click);
 
+
+var random_placement = document.querySelector(".random_placement")
 random_placement.onclick = function() {
     content.innerHTML = ""
     my_console.innerHTML = ""
@@ -113,6 +83,8 @@ random_placement.onclick = function() {
     ready_to_play()
 }
 
+var manual_placement = document.querySelector(".manual_placement")
+manual_placement.addEventListener("click", manually_place_ships_by_click);
 function manually_place_ships_by_click(){
     //right click to switch between vertical and horizontal placement options
     content.innerHTML = ""
@@ -127,23 +99,23 @@ function manually_place_ships_by_click(){
 }
 
 function toggle_isVertical(to_tog){
-if(to_tog==false){
-    return true
-}
-else{
-    return false
-}
+    if(to_tog==false){
+        return true
+    }
+    else{
+        return false
+    }
 }
 
 
 
 function get_position_loop(){
-my_grid_items.forEach(function(item){
-    item.addEventListener("mouseover",function(){
-        get_position(item)
-    }
-    )
-})
+    my_grid_items.forEach(function(item){
+        item.addEventListener("mouseover",function(){
+            get_position(item)
+        }
+        )
+    })
 }
 
 
@@ -165,10 +137,10 @@ function get_position(item){
     position = [posX, posY]
     return position
 }
+
 function mouseover_selection(){
-target_length = current_ship.ship_length;
     if(isPlaced==false){
-        selection = get_selection(current_ship, position, target_length, isVertical)
+        selection = get_selection(current_ship, position, isVertical)
         if(selection==undefined){
             remove_all_highlight()
         }
@@ -214,22 +186,22 @@ function make_selection(ship, arr, isVertical){
 
 
 function make_seleciton_loop(){
-my_grid_items.forEach(function(item){
-    item.addEventListener("click", function(){
-       make_selection(current_ship,selection,isVertical)
-    }) 
-})
-
-}
-
-function remove_mouseover(){
     my_grid_items.forEach(function(item){
-        item.removeEventListener("mouseover", mouseover_selection)
+        item.addEventListener("click", function(){
+            make_selection(current_ship,selection,isVertical)
+        }) 
     })
 }
 
+// function remove_mouseover(){
+//     my_grid_items.forEach(function(item){
+//         item.removeEventListener("mouseover", mouseover_selection)
+//     })
+// }
+
 function get_next_ship(){
-    player1.gameboard.number_of_ships_played++
+    //player1.gameboard.number_of_ships_played++
+    player1.gameboard.get_number_of_ships_placed()
     if(player1.gameboard.number_of_ships_played<5){
         current_ship = player1.gameboard.ships[player1.gameboard.number_of_ships_played]
         my_console.innerHTML = ""
@@ -241,7 +213,6 @@ function get_next_ship(){
         my_console.innerHTML = ""
         ready_to_play()
     }
-
 }
 
 
@@ -345,14 +316,14 @@ function check_opponents_status(item){
 }
 
 function opponent_ship_is_sunk(arr){
-opponent_grid_items.forEach(function(item){
-    var posX = Number(item.innerHTML[0])
-    var posY = Number(item.innerHTML[2])
-    var position = [posX, posY]
-    if(JSON.stringify(arr).includes(JSON.stringify(position))){
-        item.classList.remove("hit")
-        item.classList.add("sunk")
-    }
+    opponent_grid_items.forEach(function(item){
+        var posX = Number(item.innerHTML[0])
+        var posY = Number(item.innerHTML[2])
+        var position = [posX, posY]
+        if(JSON.stringify(arr).includes(JSON.stringify(position))){
+            item.classList.remove("hit")
+            item.classList.add("sunk")
+        }
     })
 }
 
