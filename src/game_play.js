@@ -6,6 +6,8 @@ var player2 = Player()
 player1.name = "Player1"
 player2.name = "Player2"
 
+var DIMENSIONS = 10;
+
 function get_selection(ship, starting_position, target_length, isVertical){
     var posX = Number(starting_position[0])
     var posY = Number(starting_position[1])
@@ -53,13 +55,13 @@ reset_button.innerHTML = "Reset"
 var my_console =document.querySelector(".console > .text")
 my_console.innerHTML = "Would you like to place your own ships manually or at random?"
 
-var rotate_selection = document.createElement("button")
-rotate_selection.innerHTML = "Rotate ship"
-rotate_selection.classList.add("rotate_ship")
+// var rotate_selection = document.createElement("button")
+// rotate_selection.innerHTML = "Rotate ship"
+// rotate_selection.classList.add("rotate_ship")
 
-var next_selection = document.createElement("button")
-next_selection.innerHTML = "Place next ship"
-next_selection.classList.add("place_next_ship")
+// var next_selection = document.createElement("button")
+// next_selection.innerHTML = "Place next ship"
+// next_selection.classList.add("place_next_ship")
 
 function create_opponent_board(){
     for(let i=1;i<DIMENSIONS+1; i++){
@@ -90,6 +92,7 @@ function create_my_board(){
 
 create_opponent_board()
 create_my_board()
+
 var my_grid_items = my_grid.querySelectorAll(":scope > .grid-item")
 var opponent_grid_items = opponent_grid.querySelectorAll(":scope > .grid-item")
 var selection = [] 
@@ -110,10 +113,6 @@ random_placement.onclick = function() {
     ready_to_play()
 }
 
-
-
-
-
 function manually_place_ships_by_click(){
     //right click to switch between vertical and horizontal placement options
     content.innerHTML = ""
@@ -126,11 +125,6 @@ function manually_place_ships_by_click(){
     make_seleciton_loop()
     //get_next_ship()
 }
-
-
-
-
-
 
 function toggle_isVertical(to_tog){
 if(to_tog==false){

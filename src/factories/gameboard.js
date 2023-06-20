@@ -60,7 +60,7 @@ function Gameboard(){
 
     //checks that the position is within the board 
     function check_position_on_board(posX, posY){
-        if(posX<DIMENSIONS && posX>-1 ){
+        if(posX<10 && posX>-1 ){
             if(posY<DIMENSIONS && posY > -1){
                 return true
             }
