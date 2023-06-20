@@ -1,4 +1,4 @@
-import './styles.css'
+//import './styles.css'
 const Player = require("./factories/player")
 
 var player1 = Player()
