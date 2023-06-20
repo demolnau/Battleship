@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = {
-  entry: './src/javascript.js',
+  entry: './src/game_play.js',
   output: {
     filename: 'main.js',
     path: path.resolve(__dirname, 'dist'),
