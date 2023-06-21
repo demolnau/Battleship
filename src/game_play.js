@@ -26,20 +26,13 @@ var reset_button = document.createElement("button")
 reset_button.classList.add("reset_button")
 reset_button.innerHTML = "Reset"
 
-// var rotate_selection = document.createElement("button")
-// rotate_selection.innerHTML = "Rotate ship"
-// rotate_selection.classList.add("rotate_ship")
-
-// var next_selection = document.createElement("button")
-// next_selection.innerHTML = "Place next ship"
-// next_selection.classList.add("place_next_ship")
 
 
 function get_selection(ship, starting_position, isVertical){
     var target_length = ship.ship_length;
     var posX = Number(starting_position[0])
     var posY = Number(starting_position[1])
-    possible_pos_array=[]
+    var possible_pos_array=[]
     possible_pos_array.push(starting_position)
     for(let i=1;i<target_length;i++){
                 if(isVertical==true){
@@ -193,15 +186,10 @@ function make_seleciton_loop(){
     })
 }
 
-// function remove_mouseover(){
-//     my_grid_items.forEach(function(item){
-//         item.removeEventListener("mouseover", mouseover_selection)
-//     })
-// }
 
 function get_next_ship(){
-    //player1.gameboard.number_of_ships_played++
-    player1.gameboard.get_number_of_ships_placed()
+    player1.gameboard.number_of_ships_played++
+    //player1.gameboard.get_number_of_ships_placed()
     if(player1.gameboard.number_of_ships_played<5){
         current_ship = player1.gameboard.ships[player1.gameboard.number_of_ships_played]
         my_console.innerHTML = ""

@@ -27,14 +27,6 @@ function Gameboard(){
     var position_of_hits = [];
     var number_of_ships_sunk = 0 ;
     var number_of_ships_played = 0;
-    // this.board = create_board();
-    // this.ships = generate_ships();
-    // this.missed_shots = [];
-    // this.position_of_hits = [];
-    // this.number_of_ships_sunk = 0 ;
-    // this.number_of_ships_played = 0;
- 
-    
 
     function create_board(){
         var gameboard = [] 
